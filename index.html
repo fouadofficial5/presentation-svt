@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>La Photosynthèse — Présentation Cinématique</title>
+
+  <!-- CSS الخارجي (سنكتبه بعد HTML) -->
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- تحسين ظهور الخطوط (اختياري) -->
+  <meta name="theme-color" content="#0b0b0f" />
+</head>
+
+<body>
+  <!-- =========================
+       BACKGROUND LAYERS
+  ========================== -->
+  <div class="bg">
+    <div class="bg__grain" aria-hidden="true"></div>
+    <div class="bg__vignette" aria-hidden="true"></div>
+    <div class="bg__stars" aria-hidden="true"></div>
+  </div>
+
+  <!-- =========================
+       HUD / CONTROLS
+       (Pause/Resume/Restart + Progress)
+  ========================== -->
+  <header class="hud">
+    <div class="hud__left">
+      <div class="badge">
+        <span class="badge__dot"></span>
+        <span class="badge__text">Présentation interactive</span>
+      </div>
+      <div class="hud__title">
+        <span class="hud__title__small">SVT</span>
+        <span class="hud__title__main">La Photosynthèse</span>
+      </div>
+    </div>
+
+    <div class="hud__center">
+      <div class="keys-hint">
+        <span class="key">ESPACE</span><span class="hint">Pause</span>
+        <span class="sep">•</span>
+        <span class="key">ENTER</span><span class="hint">Resume</span>
+        <span class="sep">•</span>
+        <span class="key">R</span><span class="hint">Restart</span>
+      </div>
+      <div class="progress" aria-label="Progression">
+        <div class="progress__bar" id="progressBar"></div>
+      </div>
+    </div>
+
+    <div class="hud__right">
+      <button class="btn btn--ghost" id="btnPause" type="button" aria-label="Pause">
+        ⏸ Pause
+      </button>
+      <button class="btn btn--ghost" id="btnResume" type="button" aria-label="Resume">
+        ▶ Resume
+      </button>
+      <button class="btn btn--primary" id="btnRestart" type="button" aria-label="Restart">
+        ⟲ Restart
+      </button>
+    </div>
+  </header>
+
+  <!-- =========================
+       MAIN STAGE (CINEMATIC)
+  ========================== -->
+  <main class="stage" id="stage">
+    <!-- Frame (gold classic) -->
+    <div class="frame" aria-hidden="true"></div>
+
+    <!-- Cinematic spotlight / ambient light -->
+    <div class="light light--top" aria-hidden="true"></div>
+    <div class="light light--bottom" aria-hidden="true"></div>
+
+    <!-- =========================
+         SCENE CONTAINER
+    ========================== -->
+    <section class="scene" id="sceneRoot" aria-label="Scène principale">
+      <!-- ---- SUN ---- -->
+      <div class="actor actor--sun" id="sun">
+        <!-- SVG Sun -->
+        <svg class="svg svg--sun" viewBox="0 0 200 200" role="img" aria-label="Soleil">
+          <defs>
+            <radialGradient id="sunGlow" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#fff4b0" stop-opacity="1"/>
+              <stop offset="45%" stop-color="#ffd86b" stop-opacity="0.95"/>
+              <stop offset="75%" stop-color="#ff9f3a" stop-opacity="0.55"/>
+              <stop offset="100%" stop-color="#ff6a00" stop-opacity="0"/>
+            </radialGradient>
+
+            <radialGradient id="sunCore" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#fffbe0" />
+              <stop offset="70%" stop-color="#ffd15d" />
+              <stop offset="100%" stop-color="#ff9b22" />
+            </radialGradient>
+          </defs>
+
+          <!-- glow -->
+          <circle cx="100" cy="100" r="95" fill="url(#sunGlow)"></circle>
+
+          <!-- rays -->
+          <g class="sun__rays" stroke="#ffd86b" stroke-width="6" stroke-linecap="round" opacity="0.9">
+            <line x1="100" y1="5" x2="100" y2="30"/>
+            <line x1="100" y1="170" x2="100" y2="195"/>
+            <line x1="5" y1="100" x2="30" y2="100"/>
+            <line x1="170" y1="100" x2="195" y2="100"/>
+            <line x1="25" y1="25" x2="43" y2="43"/>
+            <line x1="157" y1="157" x2="175" y2="175"/>
+            <line x1="157" y1="43" x2="175" y2="25"/>
+            <line x1="25" y1="175" x2="43" y2="157"/>
+          </g>
+
+          <!-- core -->
+          <circle cx="100" cy="100" r="55" fill="url(#sunCore)"></circle>
+        </svg>
+
+        <div class="tag tag--sun" id="tagSun">Lumière</div>
+      </div>
+
+      <!-- ---- SKY BEAMS (light rays) ---- -->
+      <div class="beam beam--1" aria-hidden="true"></div>
+      <div class="beam beam--2" aria-hidden="true"></div>
+      <div class="beam beam--3" aria-hidden="true"></div>
+
+      <!-- ---- PLANT + GROUND ---- -->
+      <div class="actor actor--plant" id="plant">
+        <!-- SVG Plant -->
+        <svg class="svg svg--plant" viewBox="0 0 360 520" role="img" aria-label="Plante">
+          <defs>
+            <linearGradient id="stemGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#7CFF8A"/>
+              <stop offset="60%" stop-color="#39C66D"/>
+              <stop offset="100%" stop-color="#1F8C4F"/>
+            </linearGradient>
+
+            <linearGradient id="leafGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#A7FFB2"/>
+              <stop offset="45%" stop-color="#38D67B"/>
+              <stop offset="100%" stop-color="#0F6C3A"/>
+            </linearGradient>
+
+            <radialGradient id="soilGrad" cx="50%" cy="30%" r="70%">
+              <stop offset="0%" stop-color="#3a2b1e"/>
+              <stop offset="60%" stop-color="#2a1f16"/>
+              <stop offset="100%" stop-color="#17110c"/>
+            </radialGradient>
+          </defs>
+
+          <!-- Soil -->
+          <path d="M20,420 C80,390 140,395 180,410 C240,435 295,430 340,405 L340,520 L20,520 Z"
+                fill="url(#soilGrad)" opacity="0.98"/>
+
+          <!-- Roots -->
+          <g class="plant__roots" stroke="#d7c2a6" stroke-width="6" stroke-linecap="round" opacity="0.65">
+            <path d="M180,420 C175,450 170,470 160,495"/>
+            <path d="M180,420 C188,452 200,474 220,495"/>
+            <path d="M180,430 C150,450 130,470 110,500"/>
+            <path d="M180,430 C210,450 235,470 260,500"/>
+          </g>
+
+          <!-- Stem -->
+          <path class="plant__stem" d="M180,420 C175,360 168,320 170,280 C172,235 190,205 190,160 C190,120 175,90 175,60"
+                fill="none" stroke="url(#stemGrad)" stroke-width="22" stroke-linecap="round"/>
+
+          <!-- Leaves -->
+          <path class="plant__leaf plant__leaf--left"
+                d="M165,240 C115,220 90,185 80,150 C118,145 150,155 175,175 C188,190 188,215 165,240 Z"
+                fill="url(#leafGrad)" opacity="0.98"/>
+
+          <path class="plant__leaf plant__leaf--right"
+                d="M195,220 C250,210 285,175 300,145 C260,140 230,150 205,165 C190,175 182,195 195,220 Z"
+                fill="url(#leafGrad)" opacity="0.98"/>
+
+          <path class="plant__leaf plant__leaf--top"
+                d="M175,110 C140,95 120,70 110,45 C145,40 170,50 185,65 C195,75 195,95 175,110 Z"
+                fill="url(#leafGrad)" opacity="0.98"/>
+
+          <!-- Highlight veins -->
+          <g class="plant__veins" stroke="#d6ffd9" stroke-width="3" opacity="0.35">
+            <path d="M168,210 C140,195 120,175 108,160"/>
+            <path d="M205,190 C230,180 255,165 275,150"/>
+            <path d="M172,85 C155,75 140,60 130,50"/>
+          </g>
+        </svg>
+
+        <!-- Labels for zoom / focus -->
+        <div class="focus-ring" id="focusLeafRing" aria-hidden="true"></div>
+        <div class="tag tag--plant" id="tagPlant">Plante</div>
+      </div>
+
+      <!-- ---- PARTICLES / MOLECULES ---- -->
+      <div class="molecules" aria-hidden="true">
+        <div class="molecule molecule--co2" id="co2_1"><span>CO₂</span></div>
+        <div class="molecule molecule--co2" id="co2_2"><span>CO₂</span></div>
+        <div class="molecule molecule--co2" id="co2_3"><span>CO₂</span></div>
+
+        <div class="molecule molecule--h2o" id="h2o_1"><span>H₂O</span></div>
+        <div class="molecule molecule--h2o" id="h2o_2"><span>H₂O</span></div>
+
+        <div class="molecule molecule--o2" id="o2_1"><span>O₂</span></div>
+        <div class="molecule molecule--o2" id="o2_2"><span>O₂</span></div>
+
+        <div class="molecule molecule--glucose" id="glu_1"><span>C₆H₁₂O₆</span></div>
+      </div>
+
+      <!-- ---- ARROWS (inputs / outputs / inside process) ---- -->
+      <div class="arrows" aria-hidden="true">
+        <div class="arrow arrow--light" id="arrowLight">
+          <span class="arrow__label">Lumière</span>
+        </div>
+
+        <div class="arrow arrow--co2" id="arrowCO2">
+          <span class="arrow__label">CO₂ (air)</span>
+        </div>
+
+        <div class="arrow arrow--h2o" id="arrowH2O">
+          <span class="arrow__label">H₂O (racines)</span>
+        </div>
+
+        <div class="arrow arrow--o2" id="arrowO2">
+          <span class="arrow__label">O₂ (sortie)</span>
+        </div>
+
+        <div class="arrow arrow--glucose" id="arrowGLU">
+          <span class="arrow__label">Glucose (énergie)</span>
+        </div>
+      </div>
+
+      <!-- ---- TEXT OVERLAY (CINEMATIC TITLES + EXPLANATIONS) ---- -->
+      <div class="overlay">
+        <!-- Big cinematic title -->
+        <div class="title-block" id="titleBlock">
+          <h1 class="title-block__title">
+            <span class="kicker">SVT</span>
+            <span class="main">La Photosynthèse</span>
+          </h1>
+          <p class="title-block__subtitle">
+            Comment une plante fabrique sa propre matière organique à partir de la lumière.
+          </p>
+
+          <div class="equation" id="equation">
+            <span class="eq__item">6 CO₂</span>
+            <span class="eq__plus">+</span>
+            <span class="eq__item">6 H₂O</span>
+            <span class="eq__arrow">→</span>
+            <span class="eq__item">C₆H₁₂O₆</span>
+            <span class="eq__plus">+</span>
+            <span class="eq__item">6 O₂</span>
+          </div>
+        </div>
+
+        <!-- Caption panel (changes each scene) -->
+        <aside class="caption" id="caption">
+          <div class="caption__top">
+            <span class="caption__scene" id="sceneLabel">SCÈNE 1</span>
+            <span class="caption__time" id="sceneTimer">00:00</span>
+          </div>
+          <h2 class="caption__title" id="captionTitle">Introduction</h2>
+          <p class="caption__text" id="captionText">
+            La photosynthèse est un processus vital : elle permet aux plantes de produire du glucose grâce à la lumière,
+            en utilisant le CO₂ de l’air et l’eau du sol, tout en libérant de l’oxygène.
+          </p>
+
+          <ul class="caption__bullets" id="captionBullets">
+            <li><strong>Lieu :</strong> feuilles (chloroplastes)</li>
+            <li><strong>Entrées :</strong> lumière, CO₂, H₂O</li>
+            <li><strong>Sorties :</strong> glucose, O₂</li>
+          </ul>
+        </aside>
+      </div>
+
+      <!-- ---- SCENE NAV (optional) ---- -->
+      <nav class="scene-nav" aria-label="Navigation des scènes">
+        <button class="pill" type="button" data-goto="0">Intro</button>
+        <button class="pill" type="button" data-goto="1">Entrées</button>
+        <button class="pill" type="button" data-goto="2">Feuille</button>
+        <button class="pill" type="button" data-goto="3">Chloroplaste</button>
+        <button class="pill" type="button" data-goto="4">Sorties</button>
+        <button class="pill" type="button" data-goto="5">Bilan</button>
+      </nav>
+    </section>
+
+    <!-- =========================
+         SCENE DEFINITIONS (DATA)
+         JS سيقرأ هذه البيانات ويحوّلها إلى "فيديو"
+    ========================== -->
+    <section class="scene-data" aria-hidden="true">
+      <article class="scene-step" data-scene="0" data-duration="9">
+        <h3 data-title>Introduction</h3>
+        <p data-text>
+          La photosynthèse : la plante transforme l’énergie lumineuse en énergie chimique stockée dans le glucose.
+        </p>
+        <ul data-bullets>
+          <li>Processus essentiel à la vie sur Terre</li>
+          <li>Produit O₂ et matière organique</li>
+          <li>Se déroule principalement dans les feuilles</li>
+        </ul>
+      </article>
+
+      <article class="scene-step" data-scene="1" data-duration="9">
+        <h3 data-title>Les entrées : lumière, CO₂, H₂O</h3>
+        <p data-text>
+          La plante capte la lumière du soleil, absorbe le CO₂ de l’air par les stomates,
+          et prend l’eau (H₂O) par les racines.
+        </p>
+        <ul data-bullets>
+          <li>Lumière : source d’énergie</li>
+          <li>CO₂ : source de carbone</li>
+          <li>H₂O : apporte hydrogène et électrons</li>
+        </ul>
+      </article>
+
+      <article class="scene-step" data-scene="2" data-duration="10">
+        <h3 data-title>Focus sur la feuille</h3>
+        <p data-text>
+          La feuille est un “laboratoire” : elle capte la lumière et échange les gaz.
+          Les stomates laissent entrer le CO₂ et sortir l’O₂.
+        </p>
+        <ul data-bullets>
+          <li>Stomates : pores d’échange</li>
+          <li>Tissu chlorophyllien : riche en chloroplastes</li>
+          <li>Surface grande = meilleure capture de lumière</li>
+        </ul>
+      </article>
+
+      <article class="scene-step" data-scene="3" data-duration="10">
+        <h3 data-title>Dans le chloroplaste</h3>
+        <p data-text>
+          Les chloroplastes contiennent la chlorophylle qui absorbe la lumière.
+          L’énergie lumineuse est utilisée pour fabriquer du glucose.
+        </p>
+        <ul data-bullets>
+          <li>Chlorophylle : absorbe la lumière</li>
+          <li>Réactions photochimiques + cycle de Calvin</li>
+          <li>Production de matière organique</li>
+        </ul>
+      </article>
+
+      <article class="scene-step" data-scene="4" data-duration="9">
+        <h3 data-title>Les sorties : glucose et oxygène</h3>
+        <p data-text>
+          Le glucose (C₆H₁₂O₆) sert d’énergie et de matière pour la croissance.
+          L’oxygène (O₂) est libéré dans l’air.
+        </p>
+        <ul data-bullets>
+          <li>Glucose : énergie + réserves (amidon)</li>
+          <li>O₂ : indispensable à la respiration</li>
+          <li>La plante “fabrique” sa nourriture</li>
+        </ul>
+      </article>
+
+      <article class="scene-step" data-scene="5" data-duration="11">
+        <h3 data-title>Bilan (équation globale)</h3>
+        <p data-text>
+          Bilan : CO₂ + H₂O + lumière → glucose + O₂.
+          La photosynthèse explique pourquoi les plantes sont à la base des chaînes alimentaires.
+        </p>
+        <ul data-bullets>
+          <li>6 CO₂ + 6 H₂O → C₆H₁₂O₆ + 6 O₂</li>
+          <li>Convertit énergie lumineuse en énergie chimique</li>
+          <li>Rôle majeur pour l’atmosphère et la vie</li>
+        </ul>
+      </article>
+    </section>
+
+    <!-- Footer small note -->
+    <footer class="footnote">
+      <span class="footnote__text">Mode cinématique • Contrôles clavier • Animation 3D (CSS) • Timeline (JS)</span>
+    </footer>
+  </main>
+
+  <!-- =========================
+       JS الخارجي (سنكتبه بعد CSS)
+  ========================== -->
+  <script src="script.js"></script>
+</body>
+</html>
